@@ -1,4 +1,4 @@
-from telegram_bot import TelegramBot
+from telegram_interface import TelegramInterface
 
 import logging.config
 
@@ -9,8 +9,8 @@ def main():
     logging.config.dictConfig(file_processing.load_json_from_file("logging_config.json"))
     credentials = file_processing.load_json_from_file("credentials.json")
 
-    bot = TelegramBot(credentials["telegram_bot_token"])
-    bot.invoke()
+    telegram_interface = TelegramInterface(credentials["telegram_bot_token"])
+    telegram_interface.invoke()
 
 
 if __name__ == "__main__":
