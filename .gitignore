@@ -1,6 +1,10 @@
 .idea/
-application.log
 __pycache__/
 __init__.py
+
+application.log
+
+google_sheets_api_credentials.json
 google_sheets_api_token.pickle
 service_account_info.json
+authorization_tokens.json
