@@ -4,7 +4,7 @@
 		"fileHandler": {
 			"class": "logging.FileHandler",
 			"formatter": "standard_formatter",
-			"filename": "Misc/application.log"
+			"filename": "misc/application.log"
 		}
 	},
 	"loggers": {
