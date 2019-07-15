@@ -5,5 +5,4 @@ __init__.py
 
 application.log
 
-google_sheets_api_token.pickle
 service_account_info.json
