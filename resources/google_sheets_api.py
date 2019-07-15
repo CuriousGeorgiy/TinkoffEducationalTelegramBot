@@ -9,9 +9,9 @@ import datetime
 
 class GoogleSheetsAPI:
 
-    def __init__(self, sheets_ids):
+    def __init__(self, ids):
         self._SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-        self._sheets_ids = sheets_ids
+        self._ids = ids
 
         self._authorization()
 
@@ -34,12 +34,18 @@ class GoogleSheetsAPI:
             with open('misc/google_sheets_api_token.pickle', 'wb') as token:
                 pickle.dump(self._credentials, token)
 
-    def get_values(self, sheet_id, range):
+    def _get_values(self, sheet_id, range):
         return self._service.spreadsheets().values().get(spreadsheetId=sheet_id, range=range).execute().get('values',
-                                                                                                            [])
+
+                                                                                                                [])
+
+    @staticmethod
+    def _range_from_sheet_name_a1_notation(sheet_name, a1_notation):
+        return "'" + sheet_name + "'" + '!' + a1_notation
 
     def extract_faq_sheet(self):
-        return self.get_values(self._sheets_ids['FAQ'], 'A2:B')
+        return self._get_values(self._ids['DATABASE_SPREADSHEET'], GoogleSheetsAPI._range_from_sheet_name_a1_notation(
+            self._ids['FAQ_SHEET'], 'A2:B'))
 
     def extract_pushes_sheet(self):
         def convert_table_date_time(row):
@@ -47,7 +53,9 @@ class GoogleSheetsAPI:
 
             return row
 
-        return list(map(convert_table_date_time, self.get_values(self._sheets_ids['PUSHES'], 'A2:C')))
+        return list(map(convert_table_date_time, self._get_values(self._ids['DATABASE_SPREADSHEET'],
+                                                                  GoogleSheetsAPI._range_from_sheet_name_a1_notation(
+                                                                      self._ids['PUSHES_SHEET'], 'A2:C'))))
 
     def extract_all_sheets(self):
         return self.extract_faq_sheet(), self.extract_pushes_sheet()
