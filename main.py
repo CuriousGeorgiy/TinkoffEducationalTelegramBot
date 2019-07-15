@@ -1,12 +1,12 @@
 from server.telegram.telegram_api import TelegramAPI
 
+from server.telegram.util.telegram_util import TelegramUtil
+
 import logging.config
 
 import util.file_processing
 
 import resources.google_sheets_api
-
-import schedule
 
 
 def main():
@@ -16,11 +16,12 @@ def main():
 
     google_sheets_api = resources.google_sheets_api.GoogleSheetsAPI(google_sheets_ids)
 
-    telegram_api = TelegramAPI(google_sheets_api.extract_faq_table(), google_sheets_api.extract_pushes_table(),
-                               authorization_tokens['telegram_bot_token'])
-    telegram_api.invoke()
+    telegram_api = TelegramAPI(*google_sheets_api.extract_all_sheets(), authorization_tokens['telegram_bot_token'])
 
-    schedule.run_pending()
+    TelegramUtil.attach_telegram_api(telegram_api)
+    TelegramUtil.attach_google_sheets_api(google_sheets_api)
+
+    telegram_api.invoke()
 
 
 if __name__ == "__main__":
