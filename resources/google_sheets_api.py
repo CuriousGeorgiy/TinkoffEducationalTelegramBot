@@ -35,14 +35,15 @@ class GoogleSheetsAPI:
                 pickle.dump(self._credentials, token)
 
     def get_values(self, sheet_id, range):
-        return self.service.spreadsheets().values().get(spreadsheetId=sheet_id, range=range).execute().get('values', [])
+        return self._service.spreadsheets().values().get(spreadsheetId=sheet_id, range=range).execute().get('values',
+                                                                                                            [])
 
     def extract_faq_sheet(self):
         return self.get_values(self._sheets_ids['FAQ'], 'A2:B')
 
     def extract_pushes_sheet(self):
         def convert_table_date_time(row):
-            row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M:%S')
+            row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
 
             return row
 
