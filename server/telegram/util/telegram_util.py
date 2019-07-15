@@ -1,7 +1,5 @@
 from server.telegram.telegram_api import TelegramAPI
 
-import schedule
-
 from resources.google_sheets_api import GoogleSheetsAPI
 
 
@@ -22,13 +20,6 @@ class TelegramUtil:
         return TelegramUtil._google_sheets_api.extract_all_sheets()
 
     @staticmethod
-    def _update_telegram_api_google_sheets():
-        faq_list, pushes_list = TelegramUtil._extract_google_sheets()
-
-        TelegramUtil._telegram_api.update_faq_sheet(faq_list)
-        TelegramUtil._telegram_api.update_pushes_sheet(pushes_list)
-
-    schedule.every().day.at('00:00').do(_update_telegram_api_google_sheets)
-
-
-
+    def update_telegram_api_data_lists():
+        if TelegramUtil._telegram_api and TelegramUtil._google_sheets_api:
+            TelegramUtil._telegram_api.update_data_lists(*TelegramUtil._extract_google_sheets())
