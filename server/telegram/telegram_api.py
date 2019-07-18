@@ -9,8 +9,9 @@ import datetime
 
 class TelegramAPI:
 
-    def __init__(self, faq_list, pushes_list, token):
-        self._updater = telegram.ext.Updater(token=token, use_context=True)
+    def __init__(self, faq_list, pushes_list, token, proxy_url):
+        self._updater = telegram.ext.Updater(token=token, use_context=True,
+                                             request_kwargs={'proxy_url': proxy_url})
         self._faq_list = faq_list
         self._pushes_list = pushes_list
 
