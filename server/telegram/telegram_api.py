@@ -48,7 +48,7 @@ class TelegramAPI:
 
             TelegramUtil.update_telegram_api_data_lists()
 
-        self._updater.job_queue.run_daily(data_lists_update_callback, datetime.time(20, 11, 50))
+        self._updater.job_queue.run_daily(data_lists_update_callback, datetime.time())
 
     def _create_push_jobs(self):
         self._push_jobs = []
