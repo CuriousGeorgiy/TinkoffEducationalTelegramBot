@@ -9,3 +9,9 @@ def create_callback_from_answer(answer):
         context.bot.send_message(chat_id=update.message.chat_id, text=answer)
 
     return callback
+
+
+@server.telegram.util.decorators.send_action(ChatAction.TYPING)
+def authorization(update, context):
+    context.bot.send_message(chat_id=update.message.chat_id, text='Ваш номер телефона: ' +
+                                                                  update.message.contact.phone_number)
