@@ -1,6 +1,7 @@
 import telegram.ext
 
 from server.telegram.callbacks import command_callbacks, message_callbacks, push_callbacks
+from server.telegram.util import filters
 
 import util.exception
 
@@ -35,7 +36,7 @@ class TelegramAPI:
     def _add_faq_handlers(self):
         self._faq_handlers = []
         for question, answer in self._faq_list:
-            self._faq_handlers.append(telegram.ext.MessageHandler(telegram.ext.Filters.regex(question),
+            self._faq_handlers.append(telegram.ext.MessageHandler(filters.PrepareMessageTextForRegexFilter(question),
                                                                   message_callbacks.
                                                                   create_callback_from_answer(answer)))
             self._updater.dispatcher.add_handler(self._faq_handlers[-1])
@@ -50,7 +51,7 @@ class TelegramAPI:
 
             TelegramUtil.update_telegram_api_data_lists()
 
-        self._updater.job_queue.run_daily(data_lists_update_callback, datetime.time())
+        self._updater.job_queue.run_repeating(data_lists_update_callback, datetime.timedelta(minutes=5))
 
     def _create_push_jobs(self):
         self._push_jobs = []
