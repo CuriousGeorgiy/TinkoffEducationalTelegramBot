@@ -10,14 +10,16 @@ import datetime
 class TelegramAPI:
 
     def __init__(self, faq_list, pushes_list, token, proxy_url):
-        self._updater = telegram.ext.Updater(token=token, use_context=True,
-                                             request_kwargs={'proxy_url': proxy_url})
+        self._updater = telegram.ext.Updater(token=token, use_context=True, request_kwargs={'proxy_url': proxy_url})
         self._faq_list = faq_list
         self._pushes_list = pushes_list
 
         self._updater.dispatcher.add_handler(telegram.ext.CommandHandler('start', command_callbacks.start))
-        self._updater.dispatcher.add_handler(
-            telegram.ext.MessageHandler(telegram.ext.Filters.command, command_callbacks.unknown))
+        self._updater.dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.command,
+                                                                         command_callbacks.unknown))
+
+        self._updater.dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.contact,
+                                                                         message_callbacks.authorization))
 
         self._add_faq_handlers()
 
