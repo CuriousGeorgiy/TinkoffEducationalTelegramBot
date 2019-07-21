@@ -38,8 +38,6 @@ class TelegramAPI:
         self._create_push_notification_jobs()
 
         self._add_faq_handlers()
-        self._updater.dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.text,
-                                                                         message_callbacks.unknown))
 
         self._updater.dispatcher.add_error_handler(server.telegram.exception.telegram_bot_update_error)
 
@@ -92,12 +90,12 @@ class TelegramAPI:
                 job_callbacks.create_push_notification_callback_from_push_text(text), send_time,
                 context=(self._id_to_person_info, groups)))
 
-    def _remove_all_push_notificaiton_jobs(self):
+    def _remove_all_push_notification_jobs(self):
         while self._push_notification_jobs:
             self._push_notification_jobs.pop().schedule_removal()
 
     def _update_push_notification_jobs(self):
-        self._remove_all_push_notificaiton_jobs()
+        self._remove_all_push_notification_jobs()
         self._create_push_notification_jobs()
 
     def _add_faq_handlers(self):
@@ -107,6 +105,8 @@ class TelegramAPI:
                                                                   message_callbacks.create_callback_from_answer(
                                                                       answer)))
             self._updater.dispatcher.add_handler(self._faq_handlers[-1])
+        self._faq_handlers.append(telegram.ext.MessageHandler(telegram.ext.Filters.text, message_callbacks.unknown))
+        self._updater.dispatcher.add_handler(self._faq_handlers[-1])
 
     def _remove_all_faq_handlers(self):
         while self._faq_handlers:
@@ -114,7 +114,6 @@ class TelegramAPI:
 
     def _update_faq_handlers(self):
         self._remove_all_faq_handlers()
-
         self._add_faq_handlers()
 
     def update_data_lists(self, people_list, push_notifications_list, faq_list):
