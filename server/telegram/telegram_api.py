@@ -105,7 +105,10 @@ class TelegramAPI:
                                                                   message_callbacks.create_callback_from_answer(
                                                                       answer)))
             self._updater.dispatcher.add_handler(self._faq_handlers[-1])
-        self._faq_handlers.append(telegram.ext.MessageHandler(telegram.ext.Filters.text, message_callbacks.unknown))
+        self._faq_handlers.append(telegram.ext.MessageHandler(telegram.ext.Filters.text,
+                                                              message_callbacks.create_callback_from_answer(
+                                                                  'К сожалению, я Вас не понимаю. Попробуйте' 
+                                                                  ' перефразировать вопрос.')))
         self._updater.dispatcher.add_handler(self._faq_handlers[-1])
 
     def _remove_all_faq_handlers(self):
