@@ -18,12 +18,12 @@ def main():
     google_sheets_api = resources.google_sheets_api.GoogleSheetsAPI(google_sheets_ids)
 
     if os.path.exists('misc/telegram_api_user_data.json'):
-        telegram_api = TelegramAPI(*google_sheets_api.extract_all_sheets(), telegram_api_config['bot_token'],
-                                   telegram_api_config['proxy_url'], 'misc/telegram_api_user_data.json', False)
+        telegram_api = TelegramAPI(*google_sheets_api.extract_all_sheets(), telegram_api_config,
+                                   'misc/telegram_api_user_data.json', False)
     else:
         open('misc/telegram_api_user_data.json', 'w').close()
-        telegram_api = TelegramAPI(*google_sheets_api.extract_all_sheets(), telegram_api_config['bot_token'],
-                                   telegram_api_config['proxy_url'], 'misc/telegram_api_user_data.json', True)
+        telegram_api = TelegramAPI(*google_sheets_api.extract_all_sheets(), telegram_api_config,
+                                   'misc/telegram_api_user_data.json', True)
 
     TelegramUtil.attach_telegram_api(telegram_api)
     TelegramUtil.attach_google_sheets_api(google_sheets_api)
