@@ -47,7 +47,7 @@ class GoogleSheetsAPI:
     def _extract_people_sheet(self):
         return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._ids['PEOPLE_SHEET'], 'A1:ZZZ'))
 
-    def _extract_pushes_sheet(self):
+    def _extract_push_notifications_sheet(self):
         def convert_table_date_time(row):
             row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
 
@@ -60,4 +60,4 @@ class GoogleSheetsAPI:
         return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._ids['FAQ_SHEET'], 'A2:B'))
 
     def extract_all_sheets(self):
-        return self._extract_people_sheet(), self._extract_pushes_sheet(), self._extract_faq_sheet()
+        return self._extract_people_sheet(), self._extract_push_notifications_sheet(), self._extract_faq_sheet()
