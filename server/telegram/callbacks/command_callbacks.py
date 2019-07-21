@@ -18,13 +18,13 @@ def start(update, context):
 @server.telegram.decorators.send_action(telegram.ChatAction.TYPING)
 def authorization(update, context):
     if not context.user_data['authorized']:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Авторизация происходит по номеру Вашего' 
+        context.bot.send_message(chat_id=update.message.chat_id, text='Авторизация проходит по номеру Вашего' 
                                                                       ' телефона.',
                                  reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
                                                                                                      ' контакты',
                                                                             request_contact=True)]]))
     else:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Вы уже прошли авторизованы и можете пользоваться'
+        context.bot.send_message(chat_id=update.message.chat_id, text='Вы уже прошли авторизацию и можете пользоваться'
                                                                       ' ботом.')
 
 
