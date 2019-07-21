@@ -54,7 +54,7 @@ class GoogleSheetsAPI:
             return row
 
         return list(map(convert_table_date_time, self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(
-            self._ids['PUSHES_SHEET'], 'A2:C'))))
+            self._ids['PUSH_NOTIFICATIONS_SHEET'], 'A2:C'))))
 
     def _extract_faq_sheet(self):
         return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._ids['FAQ_SHEET'], 'A2:B'))
