@@ -29,6 +29,8 @@ def authorization(update, context):
     from server.telegram.telegram_util import TelegramUtil
 
     phone_number_to_id, id_to_person_info = TelegramUtil.get_telegram_api_mappings_for_people_list()
+    if update.message.contact.phone_number[0].isdigit():
+        update.message.contact.phone_number = '+' + update.message.contact.phone_number
 
     if update.message.contact.phone_number in phone_number_to_id:
         context.user_data['authorized'] = True
