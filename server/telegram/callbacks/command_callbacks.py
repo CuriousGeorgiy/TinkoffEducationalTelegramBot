@@ -1,18 +1,34 @@
-import server.telegram.util.decorators
-
-from telegram.chataction import ChatAction
+import server.telegram.decorators
 
 import telegram
+import telegram.ext
 
 
-@server.telegram.util.decorators.send_action(ChatAction.TYPING)
+@telegram.ext.run_async  # May cause problems, needs to be tested.
+@server.telegram.decorators.send_action(telegram.ChatAction.TYPING)
 def start(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id, text="Приветствую вас! Для использования бота необходимо "
-                                                                  "авторизоваться по номеру телефона.", reply_markup=
-                             telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text="Отправить контакты",
-                                                                                    request_contact=True)]]))
+    context.user_data['authorized'] = False
+    context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Для использования бота необходимо'
+                                                                  ' пройти авторизацию по номеру телефона.',
+                             reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
+                                                                                                      ' контакты',
+                                                                        request_contact=True)]]))
 
 
-@server.telegram.util.decorators.send_action(ChatAction.TYPING)
+@server.telegram.decorators.send_action(telegram.ChatAction.TYPING)
+def authorization(update, context):
+    if not context.user_data['authorized']:
+        context.bot.send_message(chat_id=update.message.chat_id, text='Авторизация происходит по номеру Вашего' 
+                                                                      ' телефона.',
+                                 reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
+                                                                                                     ' контакты',
+                                                                            request_contact=True)]]))
+    else:
+        context.bot.send_message(chat_id=update.message.chat_id, text='Вы уже прошли авторизованы и можете пользоваться'
+                                                                      ' ботом.')
+
+
+@telegram.ext.run_async
+@server.telegram.decorators.send_action(telegram.ChatAction.TYPING)
 def unknown(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id, text="Сожалею, но я не понимаю эту команду.")
+    context.bot.send_message(chat_id=update.message.chat_id, text='Такой команды у меня нет.')
