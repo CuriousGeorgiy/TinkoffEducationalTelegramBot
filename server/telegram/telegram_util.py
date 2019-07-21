@@ -16,6 +16,10 @@ class TelegramUtil:
         TelegramUtil._google_sheets_api = google_sheets_api
 
     @staticmethod
+    def dump_telegram_api_persistence_obj():
+        TelegramUtil._telegram_api.dump_persistence_obj()
+
+    @staticmethod
     def update_telegram_api_data():
         if TelegramUtil._telegram_api and TelegramUtil._google_sheets_api:
             TelegramUtil._telegram_api.update_data_lists(*TelegramUtil._google_sheets_api.extract_all_sheets())
