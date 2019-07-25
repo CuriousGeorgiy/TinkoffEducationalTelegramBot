@@ -19,15 +19,16 @@ def create_callback_from_answer(answer):
 def authorization(update, context):
     from util.apis_util import APIsUtil
 
-    phone_number_to_id, _ = APIsUtil.get_telegram_api_mappings_for_people_sheet()
+    phone_number_to_person_info_dict = APIsUtil.get_telegram_api_mapping_for_people_sheet()
+
     if update.message.contact.phone_number[0].isdigit():
         update.message.contact.phone_number = '+' + update.message.contact.phone_number
 
-    if update.message.contact.phone_number in phone_number_to_id:
+    if update.message.contact.phone_number in phone_number_to_person_info_dict:
         context.user_data['authorized'] = True
-        context.user_data['id_in_telegram_api'] = phone_number_to_id[update.message.contact.phone_number]
-        APIsUtil.set_telegram_api_person_telegram_id(phone_number_to_id[update.message.contact.phone_number],
-                                                     update.message.chat_id)
+        context.user_data['phone_number'] = update.message.contact.phone_number
+        APIsUtil.set_telegram_api_person_telegram_id(update.message.contact.phone_number, update.message.chat_id)
+
         context.bot.send_message(chat_id=update.message.chat_id, text='Вы прошли авторизацию, теперь Вы можете' 
                                                                       ' пользоваться ботом.',
                                  reply_markup=telegram.ReplyKeyboardRemove())
@@ -38,16 +39,16 @@ def authorization(update, context):
                                  reply_markup=telegram.ReplyKeyboardRemove())
 
 
-@telegram.ext.dispatcher.run_async # May cause problems, needs to be tested.
+@telegram.ext.dispatcher.run_async  # May cause problems, needs to be tested.
 @server.telegram.decorators.send_action(telegram.ChatAction.TYPING)
 def nearest_class(update, context):
     from util.apis_util import APIsUtil
 
     try:
         if context.user_data['authorized']:
-            _, id_to_person_info = APIsUtil.get_telegram_api_mappings_for_people_sheet()
+            phone_number_to_person_info_dict = APIsUtil.get_telegram_api_mapping_for_people_sheet()
 
-            groups = id_to_person_info[context.user_data['id_in_telegram_api']]['groups']
+            groups = phone_number_to_person_info_dict[context.user_data['phone_number']]['groups']
             classes_schedule = APIsUtil.get_telegram_api_classes_schedule_sheet()
             message_text = ''
 
