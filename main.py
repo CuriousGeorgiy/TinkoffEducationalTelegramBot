@@ -2,10 +2,10 @@ import argparse
 import logging.config
 import os.path
 
-from server.telegram.telegram_api import TelegramAPI
+from google_sheets.google_sheets_api import GoogleSheetsAPI
+from telegram_.telegram_api import TelegramAPI
 from util.apis_util import APIsUtil
 import util.file_processing
-import resources.google_sheets_api
 
 
 def create_argument_parser():
@@ -24,7 +24,7 @@ def main(proxy, use_user_data_json):
     logging.config.dictConfig(util.file_processing.load_json_from_file('misc/logging_config.json'))
     telegram_api_config = util.file_processing.load_json_from_file('misc/telegram_api_config.json')
 
-    google_sheets_api = resources.google_sheets_api.GoogleSheetsAPI(google_sheets_ids)
+    google_sheets_api = GoogleSheetsAPI(google_sheets_ids)
 
     if not os.path.exists('misc/telegram_api_user_data.json'):
         with open('misc/telegram_api_user_data.json', 'w') as file:

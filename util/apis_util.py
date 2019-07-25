@@ -1,5 +1,5 @@
-from server.telegram.telegram_api import TelegramAPI
-from resources.google_sheets_api import GoogleSheetsAPI
+from google_sheets.google_sheets_api import GoogleSheetsAPI
+from telegram_.telegram_api import TelegramAPI
 
 
 class APIsUtil:
