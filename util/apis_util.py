@@ -35,10 +35,10 @@ class APIsUtil:
     """ Get methods """
 
     @staticmethod
-    def get_telegram_api_mappings_for_people_sheet():
+    def get_telegram_api_mapping_for_people_sheet():
         assert APIsUtil._telegram_api
 
-        return APIsUtil._telegram_api.get_mappings_for_people_sheet()
+        return APIsUtil._telegram_api.get_mapping_for_people_sheet()
 
     @staticmethod
     def get_telegram_api_classes_schedule_sheet():
