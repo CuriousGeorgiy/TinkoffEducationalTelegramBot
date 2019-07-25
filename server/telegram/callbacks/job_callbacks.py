@@ -1,5 +1,3 @@
-import server.telegram.decorators
-
 import telegram
 import telegram.ext
 
@@ -17,7 +15,8 @@ def create_push_notification_callback_from_push_text(push_text):
     return callback
 
 
-def update_data(context):
-    from server.telegram.telegram_util import TelegramUtil
+def update_data_sheets(context):
+    from util.apis_util import APIsUtil
 
-    TelegramUtil.update_telegram_api_data()
+    APIsUtil.update_telegram_api_data_sheets()
+    APIsUtil.dump_telegram_api_persistence_obj()
