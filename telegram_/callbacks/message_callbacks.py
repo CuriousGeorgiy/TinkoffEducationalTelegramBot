@@ -61,8 +61,8 @@ def nearest_class(update, context):
             context.bot.send_message(chat_id=update.message.chat_id, text=message_text)
 
     except KeyError:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Для использования бота необходимо пройти'
-                                                                      ' авторизацию с помощью команды'
+        context.bot.send_message(chat_id=update.message.chat_id, text='Для использования некоторых фукнций бота'
+                                                                      ' необходимо пройти авторизацию с помощью команды'
                                                                       ' /authorization.')
 
 
