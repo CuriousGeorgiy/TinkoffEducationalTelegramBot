@@ -7,11 +7,17 @@ import telegram_.decorators
 @telegram.ext.run_async  # May cause problems, needs to be tested.
 @telegram_.decorators.send_action(telegram.ChatAction.TYPING)
 def start(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Для использования бота необходимо'
-                                                                  ' пройти авторизацию по номеру телефона.',
-                             reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
-                                                                                                      ' контакты',
-                                                                        request_contact=True)]]))
+    try:
+        if context.user_data['authorized']:
+            context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Вы уже авторизованы и'
+                                                                          ' можете пользоваться всеми функциями бота')
+    except KeyError:
+        context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Для использования бота'
+                                                                      ' необходимо пройти авторизацию по номеру'
+                                                                      'телефона.',
+                                 reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
+                                                                                                          ' контакты',
+                                                                            request_contact=True)]]))
 
 
 @telegram.ext.run_async  # May cause problems, needs to be tested.
