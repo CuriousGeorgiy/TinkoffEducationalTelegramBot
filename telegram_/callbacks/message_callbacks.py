@@ -29,13 +29,14 @@ def authorization(update, context):
         context.user_data['phone_number'] = update.message.contact.phone_number
         APIsUtil.set_telegram_api_person_telegram_id(update.message.contact.phone_number, update.message.chat_id)
 
-        context.bot.send_message(chat_id=update.message.chat_id, text='Вы прошли авторизацию, теперь Вы можете' 
-                                                                      ' пользоваться ботом.',
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Вы прошли авторизацию можете пользоваться всеми функциями бота.',
                                  reply_markup=telegram.ReplyKeyboardRemove())
 
         APIsUtil.dump_telegram_api_persistence_obj()
     else:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Сожалею, но Вы не прошли авторизацию.',
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Сожалею, но Вы не прошли авторизацию.',
                                  reply_markup=telegram.ReplyKeyboardRemove())
 
 
@@ -61,9 +62,9 @@ def nearest_class(update, context):
             context.bot.send_message(chat_id=update.message.chat_id, text=message_text)
 
     except KeyError:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Для использования некоторых фукнций бота'
-                                                                      ' необходимо пройти авторизацию с помощью команды'
-                                                                      ' /authorization.')
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Для использования некоторых фукнций бота необходимо пройти авторизацию с помощью'
+                                      ' команды /authorization.')
 
 
 personalized_callbacks_dict = {'nearest_class': nearest_class}
