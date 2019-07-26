@@ -9,15 +9,13 @@ import telegram_.decorators
 def start(update, context):
     try:
         if context.user_data['authorized']:
-            context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Вы уже авторизованы и'
-                                                                          ' можете пользоваться всеми функциями бота.')
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text='Приветствую Вас! Вы уже авторизованы и можете пользоваться всеми функциями'
+                                          'бота.')
     except KeyError:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Приветствую Вас! Для доступа ко всем функциям '
-                                                                      ' бота необходимо пройти авторизацию по номеру'
-                                                                      'телефона.',
-                                 reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(text='Отправить'
-                                                                                                          ' контакты',
-                                                                            request_contact=True)]]))
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Приветствую Вас! Для доступа к некоторым функциям бота необходимо пройти'
+                                      ' авторизацию с помощью команды /authorization.')
 
 
 @telegram.ext.run_async  # May cause problems, needs to be tested.
@@ -25,13 +23,13 @@ def start(update, context):
 def authorization(update, context):
     try:
         if context.user_data['authorized']:
-            context.bot.send_message(chat_id=update.message.chat_id, text='Вы уже прошли авторизацию и можете' 
-                                                                          'пользоваться всеми функциями бота.')
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text='Вы уже авторизованы и можете пользоваться всеми функциями бота.')
     except KeyError:
-        context.bot.send_message(chat_id=update.message.chat_id, text='Авторизация проходит по номеру Вашего'
-                                                                      ' телефона.',
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Авторизация проходит по номеру Вашего телефона.',
                                  reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(
-                                     text='Отправить'' контакты', request_contact=True)]]))
+                                     text='Отправить контакты', request_contact=True)]]))
 
 
 @telegram.ext.run_async
