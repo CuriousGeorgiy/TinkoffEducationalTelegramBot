@@ -11,7 +11,7 @@ def start(update, context):
         if context.user_data['authorized']:
             context.bot.send_message(chat_id=update.message.chat_id,
                                      text='Приветствую Вас! Вы уже авторизованы и можете пользоваться всеми функциями'
-                                          'бота.')
+                                          ' бота.')
     except KeyError:
         context.bot.send_message(chat_id=update.message.chat_id,
                                  text='Приветствую Вас! Для доступа к некоторым функциям бота необходимо пройти'
