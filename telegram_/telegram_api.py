@@ -11,7 +11,7 @@ import util.file_processing
 class TelegramAPI:
 
     def __init__(self, people_sheet, push_notifications_sheet, faq_sheet, classes_schedule_sheet, config,
-                 user_data_json_path, use_user_data_json=True, use_proxy=True):
+                 user_data_json_path, use_user_data_json=True, use_proxy=False):
         self._persistence_path = user_data_json_path
         self._persistence = telegram.ext.DictPersistence(store_chat_data=True,
                                                          user_data_json=util.file_processing.load_json_string_from_file(
