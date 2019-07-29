@@ -32,6 +32,15 @@ class APIsUtil:
 
         APIsUtil._telegram_api.set_person_telegram_id(person_id, telegram_id)
 
+    @staticmethod
+    def append_person_to_people_sheet(phone_number, name):
+        assert APIsUtil._google_sheets_api
+
+        groups = ['0', '1']
+        groups.extend(['0'] * (APIsUtil._telegram_api.get_number_of_groups() - 1))
+
+        APIsUtil._google_sheets_api.append_values_to_people_sheet([phone_number, name, *groups])
+
     """ Get methods """
 
     @staticmethod
