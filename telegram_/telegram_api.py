@@ -1,10 +1,9 @@
 import datetime
 
-import telegram.ext
+from telegram.ext import DictPersistence, Filters, ConversationHandler, CommandHandler, MessageHandler, Updater
 
 from telegram_.callbacks import command_callbacks, message_callbacks, job_callbacks
-from telegram_ import filters
-import telegram_.exception
+from telegram_ import filters, exception
 import util.file_processing
 
 
@@ -13,28 +12,31 @@ class TelegramAPI:
     def __init__(self, people_sheet, push_notifications_sheet, faq_sheet, classes_schedule_sheet, config,
                  user_data_json_path, use_user_data_json=True, use_proxy=False):
         self._persistence_path = user_data_json_path
-        self._persistence = telegram.ext.DictPersistence(store_chat_data=True,
-                                                         user_data_json=util.file_processing.load_json_string_from_file(
+        self._persistence = DictPersistence(store_chat_data=True,
+                                            user_data_json=util.file_processing.load_json_string_from_file(
                                                              self._persistence_path)) if use_user_data_json \
-            else telegram.ext.DictPersistence(store_chat_data=True)
-        self._updater = telegram.ext.Updater(token=config['bot_token'], use_context=True,
-                                             request_kwargs={'proxy_url': config['proxy_url']},
-                                             persistence=self._persistence) if use_proxy \
-            else telegram.ext.Updater(token=config['bot_token'], use_context=True, persistence=self._persistence)
+            else DictPersistence(store_chat_data=True)
+        self._updater = Updater(token=config['bot_token'], use_context=True,
+                                request_kwargs={'proxy_url': config['proxy_url']}, persistence=self._persistence) \
+            if use_proxy else Updater(token=config['bot_token'], use_context=True, persistence=self._persistence)
+
+        self._dispatcher = self._updater.dispatcher
 
         self._create_mapping_from_people_sheet(people_sheet)
         self._push_notifications_sheet = push_notifications_sheet
         self._faq_sheet = faq_sheet
         self._classes_schedule_sheet = classes_schedule_sheet
 
-        self._updater.dispatcher.add_handler(telegram.ext.CommandHandler('start', command_callbacks.start))
-        self._updater.dispatcher.add_handler(telegram.ext.CommandHandler('authorization',
-                                                                         command_callbacks.authorization))
-        self._updater.dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.command,
-                                                                         command_callbacks.unknown))
+        self._dispatcher.add_handler(CommandHandler('start', command_callbacks.start))
+        self._dispatcher.add_handler(CommandHandler('authorization', command_callbacks.authorization))
+        self._dispatcher.add_handler(MessageHandler(Filters.command, command_callbacks.unknown))
 
-        self._updater.dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.contact,
-                                                                         message_callbacks.authorization))
+        self._dispatcher.add_handler(ConversationHandler(
+            [MessageHandler(Filters.contact, message_callbacks.authorization)],
+            {'pending_answer': [MessageHandler(Filters.regex('Хочу'), message_callbacks.ask_for_name),
+                                MessageHandler(Filters.regex('Не хочу'), message_callbacks.end_conversation)],
+             'pending_name': [MessageHandler(Filters.text, message_callbacks.push_personal_info_to_people_sheet)]},
+            [MessageHandler(Filters.command | Filters.text, message_callbacks.request_continuation_of_conversation)]))
 
         self._create_update_data_job()
         self._create_push_notification_jobs()
@@ -42,7 +44,7 @@ class TelegramAPI:
         self._faq_handlers = []
         self._create_faq_handlers()
 
-        self._updater.dispatcher.add_error_handler(telegram_.exception.telegram_bot_update_error)
+        self._dispatcher.add_error_handler(exception.telegram_bot_update_error)
 
     def invoke(self):
         self._updater.start_polling()
@@ -58,10 +60,13 @@ class TelegramAPI:
 
     def _create_mapping_from_people_sheet(self, people_sheet):
         self._phone_number_to_person_info_dict = {}
+        self._number_of_groups = len(people_sheet[0]) - 3
 
         for i in range(1, len(people_sheet)):
-            self._phone_number_to_person_info_dict[people_sheet[i][0]] = {'name': people_sheet[i][1], 'groups': set()}
-            for j in range(2, len(people_sheet[0])):
+            self._phone_number_to_person_info_dict[people_sheet[i][0]] = {'name': people_sheet[i][1],
+                                                                          'authorization_status': people_sheet[i][2],
+                                                                          'groups': set()}
+            for j in range(3, len(people_sheet[0])):
                 if int(people_sheet[i][j]):
                     self._phone_number_to_person_info_dict[people_sheet[i][0]]['groups'].add(people_sheet[0][j])
 
@@ -85,18 +90,18 @@ class TelegramAPI:
     def _create_faq_handlers(self):
         for question, answer in self._faq_sheet:
             if answer[0] == '#':
-                self._faq_handlers.append(telegram.ext.MessageHandler(filters.PrepareMessageTextForRegexFilter(
+                self._faq_handlers.append(MessageHandler(filters.PrepareMessageTextForRegexFilter(
                     question), message_callbacks.personalized_callbacks_dict[answer[1:]]))
             else:
-                self._faq_handlers.append(telegram.ext.MessageHandler(filters.PrepareMessageTextForRegexFilter(
+                self._faq_handlers.append(MessageHandler(filters.PrepareMessageTextForRegexFilter(
                     question), message_callbacks.create_callback_from_answer(answer)))
 
-            self._updater.dispatcher.add_handler(self._faq_handlers[-1])
+            self._dispatcher.add_handler(self._faq_handlers[-1])
 
-        self._faq_handlers.append(telegram.ext.MessageHandler(telegram.ext.Filters.text,
-                                                              message_callbacks.create_callback_from_answer(
-                                                                  'К сожалению, я Вас не понимаю. Попробуйте' 
-                                                                  ' перефразировать вопрос.')))
+        self._faq_handlers.append(MessageHandler(Filters.text,
+                                                 message_callbacks.create_callback_from_answer(
+                                                     'К сожалению, я Вас не понимаю. Попробуйте перефразировать'
+                                                     ' вопрос.')))
         self._updater.dispatcher.add_handler(self._faq_handlers[-1])
 
     """ Remove methods """
@@ -115,7 +120,7 @@ class TelegramAPI:
         faq_handlers_to_be_deleted = self._faq_handlers[:prev_faq_handlers_sheet_length]
 
         for faq_handler in faq_handlers_to_be_deleted:
-            self._updater.dispatcher.remove_handler(self._faq_handlers.pop(self._faq_handlers.index(faq_handler)))
+            self._dispatcher.remove_handler(self._faq_handlers.pop(self._faq_handlers.index(faq_handler)))
 
     """ Update methods """
 
@@ -156,3 +161,6 @@ class TelegramAPI:
 
     def get_classes_schedule_sheet(self):
         return self._classes_schedule_sheet
+
+    def get_number_of_groups(self):
+        return self._number_of_groups
