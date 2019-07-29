@@ -29,7 +29,7 @@ def authorization(update, context):
         context.bot.send_message(chat_id=update.message.chat_id,
                                  text='Авторизация проходит по номеру Вашего телефона.',
                                  reply_markup=telegram.ReplyKeyboardMarkup([[telegram.KeyboardButton(
-                                     text='Отправить контакты', request_contact=True)]]))
+                                     text='Отправить контакты', request_contact=True)]], one_time_keyboard=True))
 
 
 @telegram.ext.run_async
