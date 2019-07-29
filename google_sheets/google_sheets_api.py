@@ -9,21 +9,9 @@ from googleapiclient.discovery import build
 
 class GoogleSheetsAPI:
 
-    """ Static methods """
-
-    @staticmethod
-    def _range_from_sheet_name_a1_notation(sheet_name, a1_notation):
-        return "'" + sheet_name + "'" + '!' + a1_notation
-
-    @staticmethod
-    def _convert_table_date_time(row):
-        row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
-
-        return row
-
-    def __init__(self, ids):
-        self._SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-        self._ids = ids
+    def __init__(self, config):
+        self._SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        self._config = config
 
         self._authorization()
 
@@ -48,29 +36,60 @@ class GoogleSheetsAPI:
                 pickle.dump(self._credentials, token)
 
     def _get_values(self, range):
-        return self._service.spreadsheets().values().get(spreadsheetId=self._ids['DATABASE_SPREADSHEET'],
+        return self._service.spreadsheets().values().get(spreadsheetId=self._config['DATABASE_SPREADSHEET_ID'],
                                                          range=range).execute().get('values', [])
+
+    def _append_values(self, range, insert_values):
+        return self._service.spreadsheets().values().append(spreadsheetId=self._config['DATABASE_SPREADSHEET_ID'],
+                                                            range=range, valueInputOption='USER_ENTERED',
+                                                            body={'values': [insert_values]}).execute()
+
+    def append_values_to_people_sheet(self, insert_values: list):
+        self._append_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._config['PEOPLE_SHEET_NAME'],
+                                                                               self._config['PEOPLE_SHEET_RANGE']),
+                            insert_values)
 
     """ Extract methods """
 
     def _extract_people_sheet(self):
-        return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._ids['PEOPLE_SHEET'], 'A1:ZZZ'))
+        return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._config['PEOPLE_SHEET_NAME'],
+                                                                                   self._config['PEOPLE_SHEET_RANGE']))
 
     def _extract_push_notifications_sheet(self):
-        return list(map(GoogleSheetsAPI._convert_table_date_time,
+        def convert_sheet(row):
+            row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
+
+            return row
+
+        return list(map(convert_sheet,
                         self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(
-                            self._ids['PUSH_NOTIFICATIONS_SHEET'], 'A2:C'))))
+                            self._config['PUSH_NOTIFICATIONS_SHEET_NAME'],
+                            self._config['PUSH_NOTIFICATIONS_SHEET_RANGE']))))
 
     def _extract_faq_sheet(self):
-        return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._ids['FAQ_SHEET'], 'A2:B'))
+        return self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(self._config['FAQ_SHEET_NAME'],
+                                                                                   self._config['FAQ_SHEET_RANGE']))
 
     def _extract_classes_schedule_sheet(self):
-        return list(map(GoogleSheetsAPI._convert_table_date_time,
+        def convert_sheet(row):
+            row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
+            row[1] = row[1].lower()
+
+            return row
+
+        return list(map(convert_sheet,
                         self._get_values(GoogleSheetsAPI._range_from_sheet_name_a1_notation(
-                            self._ids['CLASSES_SCHEDULE_SHEET'], 'A2:C'))))
+                            self._config['CLASSES_SCHEDULE_SHEET_NAME'],
+                            self._config['CLASSES_SCHEDULE_SHEET_RANGE']))))
 
     def extract_all_sheets(self):
         return {'people_sheet': self._extract_people_sheet(),
                 'push_notifications_sheet': self._extract_push_notifications_sheet(),
                 'faq_sheet': self._extract_faq_sheet(),
                 'classes_schedule_sheet': self._extract_classes_schedule_sheet()}
+
+    """ Static methods """
+
+    @staticmethod
+    def _range_from_sheet_name_a1_notation(sheet_name, a1_notation):
+        return "'" + sheet_name + "'" + '!' + a1_notation
