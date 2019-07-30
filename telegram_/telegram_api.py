@@ -33,8 +33,8 @@ class TelegramAPI:
 
         self._dispatcher.add_handler(ConversationHandler(
             [MessageHandler(Filters.contact, message_callbacks.authorization)],
-            {'pending_answer': [MessageHandler(Filters.regex('Хочу'), message_callbacks.ask_for_name),
-                                MessageHandler(Filters.regex('Не хочу'), message_callbacks.end_conversation)],
+            {'pending_answer': [MessageHandler(Filters.regex('Планирую'), message_callbacks.ask_for_name),
+                                MessageHandler(Filters.regex('Не планирую'), message_callbacks.end_conversation)],
              'pending_name': [MessageHandler(Filters.text, message_callbacks.push_personal_info_to_people_sheet)]},
             [MessageHandler(Filters.command | Filters.text, message_callbacks.request_continuation_of_conversation)]))
 
