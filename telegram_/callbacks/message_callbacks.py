@@ -43,11 +43,11 @@ def authorization(update, context):
                                                                           ' успешного прохождения отбора я Вас'
                                                                           ' авторизую.')
         if not (context.user_data['phone_number'] in phone_number_to_person_info_dict):
-            context.bot.send_message(chat_id=update.message.chat_id, text='Если Вы хотите ходить на курсы Tinkoff'
+            context.bot.send_message(chat_id=update.message.chat_id, text='Если Вы планируете ходить на курсы Tinkoff'
                                                                           ' Generation, я могу добавить Вас в свою'
                                                                           ' ведомость и в случае успешного прохождения'
                                                                           ' отбора авторизовать.',
-                                     reply_markup=telegram.ReplyKeyboardMarkup([['Хочу', 'Не хочу']],
+                                     reply_markup=telegram.ReplyKeyboardMarkup([['Планирую', 'Не планирую']],
                                                                                one_time_keyboard=True))
 
             return 'pending_answer'
@@ -101,7 +101,7 @@ def nearest_class(update, context):
             for group, class_type, class_date in classes_schedule:
                 if (group in groups) and (class_date.timestamp() > datetime.datetime.today().timestamp()):
                     message_text += 'Ближайшее по расписанию занятие у направления {0} {1} . Тип занятия: {2}.\n'.\
-                        format(group, class_date.strftime('%d.%m.%Y %H:%M'), class_type)
+                        format(group, class_date.strftime('%d.%m.%Y в %H:%M'), class_type)
                     groups.remove(group)
 
             context.bot.send_message(chat_id=update.message.chat_id, text=message_text)
