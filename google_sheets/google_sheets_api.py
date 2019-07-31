@@ -59,6 +59,10 @@ class GoogleSheetsAPI:
         def convert_sheet(row):
             row[2] = datetime.datetime.strptime(row[2], '%d.%m.%Y %H:%M')
 
+            ''' datetime.datetime.today() is UTC+0, Moscow's timezone is UTC+3'''
+            time_offset = 3 * 3600  # Moscow's timezone is UTC+3
+            row[2] = datetime.datetime.fromtimestamp(row[2].timestamp() - time_offset)
+
             return row
 
         return list(map(convert_sheet,
