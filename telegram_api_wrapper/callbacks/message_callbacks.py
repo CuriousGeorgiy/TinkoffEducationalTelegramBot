@@ -1,23 +1,23 @@
 import datetime
 
-import telegram
-import telegram.ext
+from telegram import ChatAction, ReplyKeyboardMarkup
+from telegram.ext import run_async, ConversationHandler
 
-import telegram_.decorators
+from telegram_api_wrapper.decorators import send_action
 
 
 def create_callback_from_answer(answer):
-    @telegram.ext.dispatcher.run_async
-    @telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+    @run_async
+    @send_action(ChatAction.TYPING)
     def callback(update, context):
         context.bot.send_message(chat_id=update.message.chat_id, text=answer)
 
     return callback
 
 
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@send_action(ChatAction.TYPING)
 def authorization(update, context):
-    from util.apis_util import APIsUtil
+    from util.api_wrappers_util import APIsUtil
 
     phone_number_to_person_info_dict = APIsUtil.get_telegram_api_mapping_for_people_sheet()
 
@@ -47,48 +47,48 @@ def authorization(update, context):
                                                                           ' Generation, я могу добавить Вас в свою'
                                                                           ' ведомость и в случае успешного прохождения'
                                                                           ' отбора авторизовать.',
-                                     reply_markup=telegram.ReplyKeyboardMarkup([['Планирую', 'Не планирую']],
-                                                                               one_time_keyboard=True))
+                                     reply_markup=ReplyKeyboardMarkup([['Планирую', 'Не планирую']],
+                                                                      one_time_keyboard=True))
 
             return 'pending_answer'
 
 
-@telegram.ext.dispatcher.run_async
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@run_async
+@send_action(ChatAction.TYPING)
 def request_continuation_of_conversation(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text='Требуется закончить диалог.')
 
 
-@telegram.ext.dispatcher.run_async
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@run_async
+@send_action(ChatAction.TYPING)
 def ask_for_name(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text='Как Вас зовут (имя фамилия)?')
 
     return 'pending_name'
 
 
-@telegram.ext.dispatcher.run_async
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@run_async
+@send_action(ChatAction.TYPING)
 def end_conversation(update, context):
-    return telegram.ext.ConversationHandler.END
+    return ConversationHandler.END
 
 
-@telegram.ext.dispatcher.run_async
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@run_async
+@send_action(ChatAction.TYPING)
 def push_personal_info_to_people_sheet(update, context):
-    from util.apis_util import APIsUtil
+    from util.api_wrappers_util import APIsUtil
 
     APIsUtil.append_person_to_people_sheet('\'' + context.user_data['phone_number'], update.message.text)
 
     context.bot.send_message(chat_id=update.message.chat_id, text='Отлично, я добавил Вас в свою ведомость.')
 
-    return telegram.ext.ConversationHandler.END
+    return ConversationHandler.END
 
 
-@telegram.ext.dispatcher.run_async  # May cause problems, needs to be tested.
-@telegram_.decorators.send_action(telegram.ChatAction.TYPING)
+@run_async  # May cause problems, needs to be tested.
+@send_action(ChatAction.TYPING)
 def nearest_class(update, context):
-    from util.apis_util import APIsUtil
+    from util.api_wrappers_util import APIsUtil
 
     try:
         if context.user_data['authorized']:

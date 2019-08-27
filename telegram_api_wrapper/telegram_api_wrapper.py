@@ -1,19 +1,19 @@
-import datetime
+from datetime import datetime, timedelta
 
 from telegram.ext import DictPersistence, Filters, ConversationHandler, CommandHandler, MessageHandler, Updater
 
-from telegram_.callbacks import command_callbacks, message_callbacks, job_callbacks
-from telegram_ import filters, exception
-import util.file_processing
+from telegram_api_wrapper.callbacks import command_callbacks, message_callbacks, job_callbacks
+from telegram_api_wrapper import filters, exception
+from util import file_processing
 
 
-class TelegramAPI:
+class TelegramAPIWrapper:
 
     def __init__(self, people_sheet, push_notifications_sheet, faq_sheet, classes_schedule_sheet, config,
                  user_data_json_path, use_user_data_json=True, use_proxy=False):
         self._persistence_path = user_data_json_path
         self._persistence = DictPersistence(store_chat_data=True,
-                                            user_data_json=util.file_processing.load_json_string_from_file(
+                                            user_data_json=file_processing.load_json_string_from_file(
                                                              self._persistence_path)) if use_user_data_json \
             else DictPersistence(store_chat_data=True)
         self._updater = Updater(token=config['bot_token'], use_context=True,
@@ -51,12 +51,12 @@ class TelegramAPI:
         self._updater.idle()
 
     def dump_persistence_obj(self):
-        util.file_processing.dump_json_string_to_file(self._persistence.user_data_json, self._persistence_path)
+        file_processing.dump_json_string_to_file(self._persistence.user_data_json, self._persistence_path)
 
     """ Create methods """
 
     def _create_update_data_job(self):
-        self._updater.job_queue.run_repeating(job_callbacks.update_data_sheets, datetime.timedelta(seconds=30))
+        self._updater.job_queue.run_repeating(job_callbacks.update_data_sheets, timedelta(seconds=30))
 
     def _create_mapping_from_people_sheet(self, people_sheet):
         self._phone_number_to_person_info_dict = {}
@@ -82,7 +82,7 @@ class TelegramAPI:
         for text, groups, send_time in self._push_notifications_sheet:
             groups = set(groups.split(','))
 
-            if send_time.timestamp() > datetime.datetime.today().timestamp():
+            if send_time.timestamp() > datetime.today().timestamp():
                 self._push_notification_jobs.append(self._updater.job_queue.run_once(
                     job_callbacks.create_push_notification_callback_from_push_text(text), send_time,
                     context=(self._phone_number_to_person_info_dict, groups)))
