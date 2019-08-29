@@ -9,8 +9,10 @@ from util import file_processing
 
 class TelegramAPIWrapper:
 
-    def __init__(self, people_sheet, push_notifications_sheet, faq_sheet, classes_schedule_sheet, config,
-                 user_data_json_path, use_user_data_json=True, use_proxy=False):
+    def __init__(self, people_sheet: list, push_notifications_sheet: list, faq_sheet: list,
+                 classes_schedule_sheet: list, config: dict,
+                 user_data_json_path: str, use_user_data_json: bool = True, use_proxy: bool = False):
+
         self._persistence_path = user_data_json_path
         self._persistence = DictPersistence(store_chat_data=True,
                                             user_data_json=file_processing.load_json_string_from_file(
@@ -138,7 +140,8 @@ class TelegramAPIWrapper:
         self._create_faq_handlers()
         self._remove_prev_faq_handlers(faq_handlers_sheet_length)
 
-    def update_data_sheets(self, people_sheet, push_notifications_sheet, faq_sheet, classes_schedule_sheet):
+    def update_data_sheets(self, people_sheet: list, push_notifications_sheet: list, faq_sheet: list,
+                           classes_schedule_sheet: list):
         self._update_mapping_for_people_sheet(people_sheet)
 
         self._push_notifications_sheet = push_notifications_sheet
@@ -151,16 +154,16 @@ class TelegramAPIWrapper:
 
     """ Set methods """
 
-    def set_person_telegram_id(self, phone_number, telegram_id):
+    def set_person_telegram_id(self, phone_number: str, telegram_id: str):
         self._phone_number_to_person_info_dict[phone_number]['telegram_id'] = telegram_id
 
     """ Get methods """
 
-    def get_mapping_for_people_sheet(self):
+    def get_mapping_for_people_sheet(self) -> dict:
         return self._phone_number_to_person_info_dict
 
-    def get_classes_schedule_sheet(self):
+    def get_classes_schedule_sheet(self) -> dict:
         return self._classes_schedule_sheet
 
-    def get_number_of_groups(self):
+    def get_number_of_groups(self) -> int:
         return self._number_of_groups

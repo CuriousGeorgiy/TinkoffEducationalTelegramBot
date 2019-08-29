@@ -1,11 +1,14 @@
 {
-	"DATABASE_SPREADSHEET_ID": "1nb_EJQbhTcAdkSP5T9K2Okherm5gPXU2Ab1bSLywNVQ",
-	"PEOPLE_SHEET_NAME": "PEOPLE",
-	"PEOPLE_SHEET_RANGE": "A1:ZZZ",
-	"PUSH_NOTIFICATIONS_SHEET_NAME": "PUSH NOTIFICATIONS",
-	"PUSH_NOTIFICATIONS_SHEET_RANGE": "A2:C",
-	"FAQ_SHEET_NAME": "FAQ",
-	"FAQ_SHEET_RANGE": "A2:B",
-	"CLASSES_SCHEDULE_SHEET_NAME": "CLASSES SCHEDULE",
-	"CLASSES_SCHEDULE_SHEET_RANGE": "A2:C"
+	"token_path": "google_sheets_api_wrapper/misc/token.pickle",
+	"credentials_path": "google_sheets_api_wrapper/misc/credentials.json",
+	"scopes": ["https://www.googleapis.com/auth/spreadsheets"],
+	"database_spreadsheet_id": "1nb_EJQbhTcAdkSP5T9K2Okherm5gPXU2Ab1bSLywNVQ",
+	"people_sheet_name": "PEOPLE",
+	"people_sheet_range": "A1:ZZZ",
+	"push_notifications_sheet_name": "PUSH NOTIFICATIONS",
+	"push_notifications_sheet_range": "A2:C",
+	"faq_sheet_name": "FAQ",
+	"faq_sheet_range": "A2:B",
+	"classes_schedule_sheet_name": "CLASSES SCHEDULE",
+	"classes_schedule_sheet_range": "A2:C"
 }

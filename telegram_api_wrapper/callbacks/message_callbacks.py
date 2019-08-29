@@ -17,9 +17,9 @@ def create_callback_from_answer(answer):
 
 @send_action(ChatAction.TYPING)
 def authorization(update, context):
-    from util.api_wrappers_util import APIsUtil
+    from util.api_wrappers_util import APIWrappersUtil
 
-    phone_number_to_person_info_dict = APIsUtil.get_telegram_api_mapping_for_people_sheet()
+    phone_number_to_person_info_dict = APIWrappersUtil.get_telegram_api_wrapper_mapping_for_people_sheet()
 
     if update.message.contact.phone_number[0].isdigit():
         update.message.contact.phone_number = '+' + update.message.contact.phone_number
@@ -30,12 +30,13 @@ def authorization(update, context):
             phone_number_to_person_info_dict[context.user_data['phone_number']]['authorization_status'] == '1':
 
         context.user_data['authorized'] = True
-        APIsUtil.set_telegram_api_person_telegram_id(update.message.contact.phone_number, update.message.chat_id)
+        APIWrappersUtil.set_telegram_api_wrapper_person_telegram_id(update.message.contact.phone_number,
+                                                                    update.message.chat_id)
 
         context.bot.send_message(chat_id=update.message.chat_id,
                                  text='Вы прошли авторизацию и теперь можете пользоваться всеми функциями бота.')
 
-        APIsUtil.dump_telegram_api_persistence_obj()
+        APIWrappersUtil.dump_telegram_api_wrapper_persistence_obj()
     else:
         context.bot.send_message(chat_id=update.message.chat_id, text='Сожалею, но Вы не прошли авторизацию.')
         if context.user_data['phone_number'] in phone_number_to_person_info_dict:
@@ -76,9 +77,9 @@ def end_conversation(update, context):
 @run_async
 @send_action(ChatAction.TYPING)
 def push_personal_info_to_people_sheet(update, context):
-    from util.api_wrappers_util import APIsUtil
+    from util.api_wrappers_util import APIWrappersUtil
 
-    APIsUtil.append_person_to_people_sheet('\'' + context.user_data['phone_number'], update.message.text)
+    APIWrappersUtil.append_person_to_people_sheet('\'' + context.user_data['phone_number'], update.message.text)
 
     context.bot.send_message(chat_id=update.message.chat_id, text='Отлично, я добавил Вас в свою ведомость.')
 
@@ -88,14 +89,14 @@ def push_personal_info_to_people_sheet(update, context):
 @run_async  # May cause problems, needs to be tested.
 @send_action(ChatAction.TYPING)
 def nearest_class(update, context):
-    from util.api_wrappers_util import APIsUtil
+    from util.api_wrappers_util import APIWrappersUtil
 
     try:
         if context.user_data['authorized']:
-            phone_number_to_person_info_dict = APIsUtil.get_telegram_api_mapping_for_people_sheet()
+            phone_number_to_person_info_dict = APIWrappersUtil.get_telegram_api_wrapper_mapping_for_people_sheet()
 
             groups = phone_number_to_person_info_dict[context.user_data['phone_number']]['groups']
-            classes_schedule = APIsUtil.get_telegram_api_classes_schedule_sheet()
+            classes_schedule = APIWrappersUtil.get_telegram_api_wrapper_classes_schedule_sheet()
             message_text = ''
 
             for group, class_type, class_date in classes_schedule:

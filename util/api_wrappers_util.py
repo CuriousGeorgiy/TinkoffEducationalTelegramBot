@@ -11,24 +11,24 @@ class APIWrappersUtil:
         APIWrappersUtil._telegram_api_wrapper = telegram_api_wrapper
 
     @staticmethod
-    def attach_google_sheets_api_wrapper(google_sheets_api: GoogleSheetsAPIWrapper):
-        APIWrappersUtil._google_sheets_api = google_sheets_api
+    def attach_google_sheets_api_wrapper(google_sheets_api_wrapper: GoogleSheetsAPIWrapper):
+        APIWrappersUtil._google_sheets_api_wrapper = google_sheets_api_wrapper
 
     @staticmethod
-    def dump_telegram_api_persistence_obj():
+    def dump_telegram_api_wrapper_persistence_obj():
         assert APIWrappersUtil._telegram_api_wrapper
 
         APIWrappersUtil._telegram_api_wrapper.dump_persistence_obj()
 
     @staticmethod
-    def update_telegram_api_data_sheets():
+    def update_telegram_api_wrapper_data_sheets():
         assert APIWrappersUtil._telegram_api_wrapper and APIWrappersUtil._google_sheets_api_wrapper
 
         APIWrappersUtil._telegram_api_wrapper.update_data_sheets(
             **APIWrappersUtil._google_sheets_api_wrapper.extract_all_sheets())
 
     @staticmethod
-    def set_telegram_api_person_telegram_id(person_id, telegram_id):
+    def set_telegram_api_wrapper_person_telegram_id(person_id, telegram_id):
         assert APIWrappersUtil._telegram_api_wrapper
 
         APIWrappersUtil._telegram_api_wrapper.set_person_telegram_id(person_id, telegram_id)
@@ -45,13 +45,13 @@ class APIWrappersUtil:
     """ Get methods """
 
     @staticmethod
-    def get_telegram_api_mapping_for_people_sheet():
+    def get_telegram_api_wrapper_mapping_for_people_sheet():
         assert APIWrappersUtil._telegram_api_wrapper
 
         return APIWrappersUtil._telegram_api_wrapper.get_mapping_for_people_sheet()
 
     @staticmethod
-    def get_telegram_api_classes_schedule_sheet():
+    def get_telegram_api_wrapper_classes_schedule_sheet():
         assert APIWrappersUtil._telegram_api_wrapper
 
         return APIWrappersUtil._telegram_api_wrapper.get_classes_schedule_sheet()

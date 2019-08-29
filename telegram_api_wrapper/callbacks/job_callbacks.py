@@ -15,7 +15,7 @@ def create_push_notification_callback_from_push_text(push_text):
 
 
 def update_data_sheets(context):
-    from util.api_wrappers_util import APIsUtil
+    from util.api_wrappers_util import APIWrappersUtil
 
-    APIsUtil.update_telegram_api_data_sheets()
-    APIsUtil.dump_telegram_api_persistence_obj()
+    APIWrappersUtil.update_telegram_api_wrapper_data_sheets()
+    APIWrappersUtil.dump_telegram_api_wrapper_persistence_obj()

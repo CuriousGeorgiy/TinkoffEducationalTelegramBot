@@ -1,7 +1,9 @@
 from functools import wraps
 
+from telegram import ChatAction
 
-def send_action(action):
+
+def send_action(action: ChatAction):
     def decorator(func):
         @wraps(func)
         def command_func(update, context, *args, **kwargs):
